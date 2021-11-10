@@ -1,0 +1,167 @@
+title Confounding Calendar
+author Menderbug
+homepage menderbug.itch.io
+
+=====
+TAGS
+=====
+
+Value = W_ U_ B_ R_ G_
+
+=========
+MAPPINGS
+=========
+
+Value => MergeW
+W_ U_ B_ R_ G_ -> W_ R_ U_ G_ B_
+
+Value => MergeU
+W_ U_ B_ R_ G_ -> R_ U_ G_ B_ W_
+
+Value => MergeB
+W_ U_ B_ R_ G_ -> U_ G_ B_ W_ R_
+
+Value => MergeR
+W_ U_ B_ R_ G_ -> G_ B_ W_ R_ U_
+
+Value => MergeG
+W_ U_ B_ R_ G_ -> B_ W_ R_ U_ G_
+
+========
+OBJECTS
+========
+
+Background
+LIGHTGREEN GREEN
+11111
+01111
+11101
+11111
+10111
+
+Wall
+BROWN DARKBROWN
+00010
+11111
+01000
+11111
+00010
+
+Player
+Black Orange White Blue
+.000.
+.111.
+22222
+.333.
+.3.3.
+
+Crate:W_
+Orange Yellow
+10001
+10001
+10101
+10101
+01010
+
+Crate:U_
+Orange Yellow
+01010
+01010
+01010
+01010
+01110
+
+Crate:B_
+Orange Yellow
+01100
+01010
+01100
+01010
+01110
+
+Crate:R_
+Orange Yellow
+01100
+01010
+01100
+01010
+01010
+
+Crate:G_
+Orange Yellow
+00100
+01010
+01000
+01010
+00110
+
+Target:Value
+green lightgreen
+copy: Crate:Value
+
+
+
+=======
+LEGEND
+=======
+
+. = Background
+# = Wall
+P = Player
+W = Crate:W_
+U = Crate:U_
+B = Crate:B_
+R = Crate:R_
+G = Crate:G_
+1 = Target:W_
+2 = Target:U_
+3 = Target:B_
+4 = Target:R_
+5 = Target:G_
+
+=======
+SOUNDS
+=======
+
+
+================
+COLLISIONLAYERS
+================
+
+Background
+Target:Value
+Player, Wall, Crate:Value
+
+======
+RULES
+======
+
+[ >  Player | Crate:Value ] -> [  >  Player | > Crate:Value  ]
+
+Value [ > Crate:Value | Crate:W_ ] -> [ > Crate:MergeW | ]
+Value [ > Crate:Value | Crate:U_ ] -> [ > Crate:MergeU | ]
+Value [ > Crate:Value | Crate:B_ ] -> [ > Crate:MergeB | ]
+Value [ > Crate:Value | Crate:R_ ] -> [ > Crate:MergeR | ]
+Value [ > Crate:Value | Crate:G_ ] -> [ > Crate:MergeG | ]
+
+==============
+WINCONDITIONS
+==============
+
+All Target:W_ on Crate:W_
+All Target:U_ on Crate:U_
+All Target:B_ on Crate:B_
+All Target:R_ on Crate:R_
+All Target:G_ on Crate:G_
+
+=======
+LEVELS
+=======
+
+
+#########
+#P......#
+#.WUBRG.# 
+#.12345.#
+#.......#
+#########
