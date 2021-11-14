@@ -7,6 +7,7 @@ sprite_size 9x9
 run_rules_on_level_start
 
 again_interval 0.1
+key_repeat_interval 0.3
 
 =====
 TAGS
@@ -647,8 +648,15 @@ G = Crate:G_
 3 = Trigger:B_
 4 = Trigger:R_
 5 = Trigger:G_
+Ẅ = ActiveCrate:W_ and Trigger:W_
+Ü = ActiveCrate:U_ and Trigger:U_
+Ḇ = ActiveCrate:B_ and Trigger:B_
+Ṟ = ActiveCrate:R_ and Trigger:R_
+Ḡ = ActiveCrate:G_ and Trigger:G_
+
 * = Goal
 + = DoorClosed
+- = DoorOpen
 
 ─ = Wire:Floor_:Inactive_:L_ and Wire:Floor_:Inactive_:R_
 │ = Wire:Floor_:Inactive_:U_ and Wire:Floor_:Inactive_:D_
@@ -657,12 +665,26 @@ G = Crate:G_
 └ = Wire:Floor_:Inactive_:U_ and Wire:Floor_:Inactive_:R_
 ┘ = Wire:Floor_:Inactive_:L_ and Wire:Floor_:Inactive_:U_
 
+━ = Wire:Floor_:Active_:L_ and Wire:Floor_:Active_:R_
+┃ = Wire:Floor_:Active_:U_ and Wire:Floor_:Active_:D_
+┏ = Wire:Floor_:Active_:D_ and Wire:Floor_:Active_:R_
+┓ = Wire:Floor_:Active_:L_ and Wire:Floor_:Active_:D_
+┗ = Wire:Floor_:Active_:U_ and Wire:Floor_:Active_:R_
+┛ = Wire:Floor_:Active_:L_ and Wire:Floor_:Active_:U_
+
 ═ = Wire:Wall_:Inactive_:L_ and Wire:Wall_:Inactive_:R_ and Wall
 ║ = Wire:Wall_:Inactive_:U_ and Wire:Wall_:Inactive_:D_ and Wall
 ╔ = Wire:Wall_:Inactive_:D_ and Wire:Wall_:Inactive_:R_ and Wall
 ╗ = Wire:Wall_:Inactive_:L_ and Wire:Wall_:Inactive_:D_ and Wall
 ╚ = Wire:Wall_:Inactive_:U_ and Wire:Wall_:Inactive_:R_ and Wall
 ╝ = Wire:Wall_:Inactive_:L_ and Wire:Wall_:Inactive_:U_ and Wall
+
+╪ = Wire:Wall_:Active_:L_ and Wire:Wall_:Active_:R_ and Wall
+╫ = Wire:Wall_:Active_:U_ and Wire:Wall_:Active_:D_ and Wall
+╓ = Wire:Wall_:Active_:D_ and Wire:Wall_:Active_:R_ and Wall
+╖ = Wire:Wall_:Active_:L_ and Wire:Wall_:Active_:D_ and Wall
+╙ = Wire:Wall_:Active_:U_ and Wire:Wall_:Active_:R_ and Wall
+╜ = Wire:Wall_:Active_:L_ and Wire:Wall_:Active_:U_ and Wall
 
 ╭ = DiagramWallLU and Wall
 ╮ = DiagramWallRU and Wall
@@ -859,18 +881,25 @@ LEVELS
 )
 
 ######################
-#...#................#
-#.*.#................#
-#...#................#
-╔═+##................#
-║...#....╭┬╮.........#
-║.p.#....├┼┤.........#
-║...#....╰┴╯.........#
-║.w.###..............#
-║.....#..............#
-╚─4.1.+..............#
-#...│.║..............#
-####╚═╝###############
+##...###......########
+##.*.###......+....###
+##...###......║#...###
+╔══+####......╚4.wuw.#
+║.....##.....╭┬╮##..p#
+║.....####+##├┼┤####+#
+║.....##.....╰┴╯.....#
+║.r.b.#╓━ḇ.w..#......#
+║.....#╫......#......#
+╚─2.1.+-..u.5.+......#
+#...│.║#....│.║......#
+####╚═╝#####╚═╝#######
+
+#######*
+###..###
+###...##
+#.wuw.4#
+#p..####
+########
 
 ##########...
 ##p......#.#.
