@@ -708,6 +708,17 @@ DiagramWall = DiagramWallLU or DiagramWallRU or DiagramWallRD or DiagramWallLD o
 SOUNDS
 =======
 
+Crate:Value move 98127707
+ActiveCrate:Value move 98127707
+
+GlowingCrate:Value:t3 create 82946903
+
+Wire create 38476507
+
+sfx0 49593708 (power down)
+sfx1 83091902 (power up)
+
+endlevel 68360900
 
 ================
 COLLISIONLAYERS
@@ -781,10 +792,10 @@ down [ _Temp | _WallEnds:L_ ] -> [ _Temp WallDecoCornerLD | _WallEnds:L_ ]
 [ _WallEnds:U_ ] -> [ WallDecoU ]
 [ _WallEnds:D_ ] -> [ WallDecoD ]
 
-right [ Trigger:Value no Wire | Wire:WireType:WireState:L_ ] -> [ Trigger:Value Wire:Trigger_:Inactive_:R_ | Wire:WireType:WireState:L_ ]
-left [ Trigger:Value no Wire | Wire:WireType:WireState:R_ ] -> [ Trigger:Value Wire:Trigger_:Inactive_:L_ | Wire:WireType:WireState:R_ ]
-up [ Trigger:Value no Wire | Wire:WireType:WireState:D_ ] -> [ Trigger:Value Wire:Trigger_:Inactive_:U_ | Wire:WireType:WireState:D_ ]
-down [ Trigger:Value no Wire | Wire:WireType:WireState:U_ ] -> [ Trigger:Value Wire:Trigger_:Inactive_:D_ | Wire:WireType:WireState:U_ ]
+right WireState [ Trigger:Value no Wire | Wire:WireType:WireState:L_ ] -> [ Trigger:Value Wire:Trigger_:WireState:R_ | Wire:WireType:WireState:L_ ]
+left WireState [ Trigger:Value no Wire | Wire:WireType:WireState:R_ ] -> [ Trigger:Value Wire:Trigger_:WireState:L_ | Wire:WireType:WireState:R_ ]
+up WireState [ Trigger:Value no Wire | Wire:WireType:WireState:D_ ] -> [ Trigger:Value Wire:Trigger_:WireState:U_ | Wire:WireType:WireState:D_ ]
+down WireState [ Trigger:Value no Wire | Wire:WireType:WireState:U_ ] -> [ Trigger:Value Wire:Trigger_:WireState:D_ | Wire:WireType:WireState:U_ ]
 
 Value [ ActiveCrate:Value ] -> [ Crate:Value ]
 
@@ -830,7 +841,7 @@ Value [ > Crate:Value | Crate:G_ ] -> [ > Crate:MergeG > GlowingCrate:MergeG:t3 
 late Value [ Crate:Value Trigger:Value ] -> [ ActiveCrate:Value Trigger:Value ]
 
 ( Activate and propagate wires )
-late Value Direction [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Inactive_:Direction ] -> [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:Direction _Activating ]
+late Value Direction [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Inactive_:Direction ] -> [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:Direction _Activating ] sfx1
 
 late right WireType1 WireType2 [ _Activating no _Temp Wire:WireType1:Active_:R_ | Wire:WireType2:Inactive_:L_ ] -> [ Wire:WireType1:Active_:R_ | Wire:WireType2:Active_:L_ _Activating _Temp ] again
 late left WireType1 WireType2 [ _Activating no _Temp Wire:WireType1:Active_:L_ | Wire:WireType2:Inactive_:R_ ] -> [ Wire:WireType1:Active_:L_ | Wire:WireType2:Active_:R_ _Activating _Temp ] again
@@ -848,7 +859,7 @@ late [ _Temp ] -> [ ]
 
 ( Deactivate and propagate wires )
 late Value [ ActiveCrate:Value no Trigger:Value ] -> [ Crate:Value ]
-late Value Direction [ no ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:Direction ] -> [ Trigger:Value Wire:Trigger_:Inactive_:Direction _Deactivating ]
+late Value Direction [ no ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:Direction ] -> [ Trigger:Value Wire:Trigger_:Inactive_:Direction _Deactivating ] sfx0
 
 late right WireType1 WireType2 [ _Deactivating no _Temp Wire:WireType1:Inactive_:R_ | Wire:WireType2:Active_:L_ ] -> [ Wire:WireType1:Inactive_:R_ | Wire:WireType2:Inactive_:L_ _Deactivating _Temp ] again
 late left WireType1 WireType2 [ _Deactivating no _Temp Wire:WireType1:Inactive_:L_ | Wire:WireType2:Active_:R_ ] -> [ Wire:WireType1:Inactive_:L_ | Wire:WireType2:Inactive_:R_ _Deactivating _Temp ] again
