@@ -2,6 +2,11 @@ title Penta Laws
 author Menderbug
 homepage menderbug.itch.io
 
+background_color #350828
+author_color #BE7DBC
+text_color #F9CB60
+keyhint_color #BE7DBC
+
 sprite_size 9x9
 
 run_rules_on_level_start
@@ -625,6 +630,9 @@ pink
 _Temp:Value
 pink
 
+_DoorClosing
+pink
+
 _Activating
 transparent
 
@@ -704,6 +712,8 @@ Wire = Wire:WireType:WireState:Direction
 
 DiagramWall = DiagramWallLU or DiagramWallRU or DiagramWallRD or DiagramWallLD or DiagramWallL or DiagramWallU or DiagramWallR or DiagramWallD
 
+Door = DoorOpen or DoorClosed
+
 =======
 SOUNDS
 =======
@@ -751,6 +761,7 @@ Direction -> _WallEnds:Direction
 
 _Activating, _Deactivating
 _Temp
+_DoorClosing
 Value -> _Temp:Value
 
 ======
@@ -848,12 +859,9 @@ late left WireType1 WireType2 [ _Activating no _Temp Wire:WireType1:Active_:L_ |
 late up WireType1 WireType2 [ _Activating no _Temp Wire:WireType1:Active_:U_ | Wire:WireType2:Inactive_:D_ ] -> [ Wire:WireType1:Active_:U_ | Wire:WireType2:Active_:D_ _Activating _Temp ] again
 late down WireType1 WireType2 [ _Activating no _Temp Wire:WireType1:Active_:D_ | Wire:WireType2:Inactive_:U_ ] -> [ Wire:WireType1:Active_:D_ | Wire:WireType2:Active_:U_ _Activating _Temp ] again
 
-late right WireType [ _Activating no _Temp Wire:WireType:Active_:R_ | DoorClosed ] -> [ Wire:WireType:Active_:R_ | DoorOpen ]
-late left WireType [ _Activating no _Temp Wire:WireType:Active_:L_ | DoorClosed ] -> [ Wire:WireType:Active_:L_ | DoorOpen ]
-late up WireType [ _Activating no _Temp Wire:WireType:Active_:U_ | DoorClosed ] -> [ Wire:WireType:Active_:U_ | DoorOpen ]
-late down WireType [ _Activating no _Temp Wire:WireType:Active_:D_ | DoorClosed ] -> [ Wire:WireType:Active_:D_ | DoorOpen ]
-
 late WireType Direction1 Direction2 [ _Activating no _Temp Wire:WireType:Active_:Direction1 Wire:WireType:Inactive_:Direction2] -> [ _Activating _Temp Wire:WireType:Active_:Direction1 Wire:WireType:Active_:Direction2] again
+
+late [ _Activating no _Temp ] -> [ ]
 
 late [ _Temp ] -> [ ]
 
@@ -866,14 +874,20 @@ late left WireType1 WireType2 [ _Deactivating no _Temp Wire:WireType1:Inactive_:
 late up WireType1 WireType2 [ _Deactivating no _Temp Wire:WireType1:Inactive_:U_ | Wire:WireType2:Active_:D_ ] -> [ Wire:WireType1:Inactive_:U_ | Wire:WireType2:Inactive_:D_ _Deactivating _Temp ] again
 late down WireType1 WireType2 [ _Deactivating no _Temp Wire:WireType1:Inactive_:D_ | Wire:WireType2:Active_:U_ ] -> [ Wire:WireType1:Inactive_:D_ | Wire:WireType2:Inactive_:U_ _Deactivating _Temp ] again
 
-late right WireType [ _Deactivating no _Temp Wire:WireType:Inactive_:R_ | DoorOpen ] -> [ Wire:WireType:Inactive_:R_ | DoorClosed ]
-late left WireType [ _Deactivating no _Temp Wire:WireType:Inactive_:L_ | DoorOpen ] -> [ Wire:WireType:Inactive_:L_ | DoorClosed ]
-late up WireType [ _Deactivating no _Temp Wire:WireType:Inactive_:U_ | DoorOpen ] -> [ Wire:WireType:Inactive_:U_ | DoorClosed ]
-late down WireType [ _Deactivating no _Temp Wire:WireType:Inactive_:D_ | DoorOpen ] -> [ Wire:WireType:Inactive_:D_ | DoorClosed ]
-
 late WireType Direction1 Direction2 [ _Deactivating no _Temp Wire:WireType:Inactive_:Direction1 Wire:WireType:Active_:Direction2] -> [ _Deactivating _Temp Wire:WireType:Inactive_:Direction1 Wire:WireType:Inactive_:Direction2] again
 
+late [ _Deactivating no _Temp ] -> [ ]
+
 late [ _Temp ] -> [ ]
+
+( Open/close doors )
+
+late [ Door ] -> [ _DoorClosing ]
+late right [ Wire:WireType:Active_:R_ | _DoorClosing ] -> [ Wire:WireType:Active_:R_ | DoorOpen ]
+late left [ Wire:WireType:Active_:L_ | _DoorClosing ] -> [ Wire:WireType:Active_:L_ | DoorOpen ]
+late up [ Wire:WireType:Active_:U_ | _DoorClosing ] -> [ Wire:WireType:Active_:U_ | DoorOpen ]
+late down [ Wire:WireType:Active_:D_ | _DoorClosing ] -> [ Wire:WireType:Active_:D_ | DoorOpen ]
+late [ _DoorClosing ] -> [ DoorClosed ]
 
 ==============
 WINCONDITIONS
@@ -944,5 +958,15 @@ LEVELS
 .├┼┤.........
 .╰┴╯.......*.
 .............
+
+
+*########
+#..┌+┐..#
+#..│.│..#
+#..│.│..#
+#..1.2..#
+#..w.u..#
+#p......#
+#########
 
 )
