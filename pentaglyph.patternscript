@@ -14,12 +14,18 @@ run_rules_on_level_start
 again_interval 0.1
 key_repeat_interval 0.3
 
+debug
+
 =====
 TAGS
 =====
 
+U__ = up
+L__ = left
+R__ = right
+D__ = down
+
 Value = W_ U_ B_ R_ G_
-Direction = U_ D_ L_ R_
 WireType = Floor_ Wall_ Trigger_
 WireState = Active_ Inactive_
 Frame = t10 t9 t8 t7 t6 t5 t4 t3 t2 t1 t0
@@ -27,12 +33,12 @@ Section = U_ D_ L_ R_ UL_ UR_ DL_ DR_
 
 Value1 = Value
 Value2 = Value
-Direction1 = Direction
-Direction2 = Direction
 WireType1 = WireType
 WireType2 = WireType
 Section1 = Section
 Section2 = Section
+Directions1 = directions
+Directions2 = directions
 
 =========
 MAPPINGS
@@ -202,7 +208,7 @@ Goal
 00.......
 0000.....
 
-Wire:Floor_:Inactive_:R_
+Wire:Floor_:Inactive_:right
 #F9960F #F9960F #F9960F
 .........
 .........
@@ -214,33 +220,25 @@ Wire:Floor_:Inactive_:R_
 .........
 .........
 
-Wire:Floor_:Inactive_:U_
+Wire:Floor_:Inactive_:directions
 #F9960F #F9960F #F9960F
-copy: Wire:Floor_:Inactive_:R_ rot:right:up
+copy: Wire:Floor_:Inactive_:right rot:right:>
 
-Wire:Floor_:Inactive_:D_
-#F9960F #F9960F #F9960F
-copy: Wire:Floor_:Inactive_:R_ rot:right:down
-
-Wire:Floor_:Inactive_:L_
-#F9960F #F9960F #F9960F
-copy: Wire:Floor_:Inactive_:R_ rot:right:left
-
-Wire:Floor_:Active_:Direction
+Wire:Floor_:Active_:directions
 #BC2F01 #BC2F01 #BC2F01
-copy: Wire:Floor_:Inactive_:Direction
+copy: Wire:Floor_:Inactive_:directions
 
-Wire:Wall_:Inactive_:Direction
+Wire:Wall_:Inactive_:directions
 #F9960F transparent transparent
-copy: Wire:Floor_:Inactive_:Direction
+copy: Wire:Floor_:Inactive_:directions
 
-Wire:Wall_:Active_:Direction
+Wire:Wall_:Active_:directions
 #BC2F01 transparent transparent
-copy: Wire:Floor_:Inactive_:Direction
+copy: Wire:Floor_:Inactive_:directions
 
-Wire:Trigger_:WireState:Direction
+Wire:Trigger_:WireState:directions
 transparent transparent #F9960F
-copy: Wire:Floor_:Inactive_:Direction
+copy: Wire:Floor_:Inactive_:directions
 
 DiagramWallLU
 #BE7DBC #60117f
@@ -495,9 +493,8 @@ copy: Diagram:Section:Value
 ( t0 is end of animation )
 
 
-( RLUD indicate which sides border non-wall tiles )
-
-WallDecoR
+( Direction indicates which side borders non-wall tiles )
+WallDeco:right
 #BE7DBC
 ........0
 ........0
@@ -509,95 +506,12 @@ WallDecoR
 ........0
 ........0
 
-WallDecoL
+WallDeco:directions
 #BE7DBC
-copy: WallDecoR |
+copy: WallDeco:right rot:right:>
 
-WallDecoU
-#BE7DBC
-copy: WallDecoR rot:right:up
-
-WallDecoD
-#BE7DBC
-copy: WallDecoR rot:right:down
-
-WallDecoRL
-#BE7DBC
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-
-WallDecoUD
-#BE7DBC
-copy: WallDecoRL rot:right:down
-
-WallDecoRU
-#BE7DBC
-000000000
-........0
-........0
-........0
-........0
-........0
-........0
-........0
-........0
-
-WallDecoRD
-#BE7DBC
-copy: WallDecoRU rot:right:down
-
-WallDecoLU
-#BE7DBC
-copy: WallDecoRU rot:right:up
-
-WallDecoLD
-#BE7DBC
-copy: WallDecoRU rot:right:left
-
-WallDecoRLU
-#BE7DBC
-000000000
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-
-WallDecoRLD
-#BE7DBC
-copy: WallDecoRLU rot:up:down
-
-WallDecoUDR
-#BE7DBC
-copy: WallDecoRLU rot:up:right
-
-WallDecoUDL
-#BE7DBC
-copy: WallDecoRLU rot:up:left
-
-WallDecoRLUD
-#BE7DBC
-000000000
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-0.......0
-000000000
-
-WallDecoCornerRU
+( Direction indicates the side clockwise from the corner )
+WallDecoCorner:right
 #BE7DBC
 ........0
 .........
@@ -609,25 +523,17 @@ WallDecoCornerRU
 .........
 .........
 
-WallDecoCornerRD
+WallDecoCorner:directions
 #BE7DBC
-copy: WallDecoCornerRU rot:right:down
-
-WallDecoCornerLU
-#BE7DBC
-copy: WallDecoCornerRU rot:right:up
-
-WallDecoCornerLD
-#BE7DBC
-copy: WallDecoCornerRU rot:right:left
-
-_WallEnds:Direction
-pink
+copy: WallDecoCorner:right rot:right:>
 
 _Temp
 pink
 
 _Temp:Value
+pink
+
+_Temp:directions
 pink
 
 _DoorClosing
@@ -666,33 +572,33 @@ G = Crate:G_
 + = DoorClosed
 - = DoorOpen
 
-─ = Wire:Floor_:Inactive_:L_ and Wire:Floor_:Inactive_:R_
-│ = Wire:Floor_:Inactive_:U_ and Wire:Floor_:Inactive_:D_
-┌ = Wire:Floor_:Inactive_:D_ and Wire:Floor_:Inactive_:R_
-┐ = Wire:Floor_:Inactive_:L_ and Wire:Floor_:Inactive_:D_
-└ = Wire:Floor_:Inactive_:U_ and Wire:Floor_:Inactive_:R_
-┘ = Wire:Floor_:Inactive_:L_ and Wire:Floor_:Inactive_:U_
+─ = Wire:Floor_:Inactive_:L__ and Wire:Floor_:Inactive_:R__
+│ = Wire:Floor_:Inactive_:U__ and Wire:Floor_:Inactive_:D__
+┌ = Wire:Floor_:Inactive_:D__ and Wire:Floor_:Inactive_:R__
+┐ = Wire:Floor_:Inactive_:L__ and Wire:Floor_:Inactive_:D__
+└ = Wire:Floor_:Inactive_:U__ and Wire:Floor_:Inactive_:R__
+┘ = Wire:Floor_:Inactive_:L__ and Wire:Floor_:Inactive_:U__
 
-━ = Wire:Floor_:Active_:L_ and Wire:Floor_:Active_:R_
-┃ = Wire:Floor_:Active_:U_ and Wire:Floor_:Active_:D_
-┏ = Wire:Floor_:Active_:D_ and Wire:Floor_:Active_:R_
-┓ = Wire:Floor_:Active_:L_ and Wire:Floor_:Active_:D_
-┗ = Wire:Floor_:Active_:U_ and Wire:Floor_:Active_:R_
-┛ = Wire:Floor_:Active_:L_ and Wire:Floor_:Active_:U_
+━ = Wire:Floor_:Active_:L__ and Wire:Floor_:Active_:R__
+┃ = Wire:Floor_:Active_:U__ and Wire:Floor_:Active_:D__
+┏ = Wire:Floor_:Active_:D__ and Wire:Floor_:Active_:R__
+┓ = Wire:Floor_:Active_:L__ and Wire:Floor_:Active_:D__
+┗ = Wire:Floor_:Active_:U__ and Wire:Floor_:Active_:R__
+┛ = Wire:Floor_:Active_:L__ and Wire:Floor_:Active_:U__
 
-═ = Wire:Wall_:Inactive_:L_ and Wire:Wall_:Inactive_:R_ and Wall
-║ = Wire:Wall_:Inactive_:U_ and Wire:Wall_:Inactive_:D_ and Wall
-╔ = Wire:Wall_:Inactive_:D_ and Wire:Wall_:Inactive_:R_ and Wall
-╗ = Wire:Wall_:Inactive_:L_ and Wire:Wall_:Inactive_:D_ and Wall
-╚ = Wire:Wall_:Inactive_:U_ and Wire:Wall_:Inactive_:R_ and Wall
-╝ = Wire:Wall_:Inactive_:L_ and Wire:Wall_:Inactive_:U_ and Wall
+═ = Wire:Wall_:Inactive_:L__ and Wire:Wall_:Inactive_:R__ and Wall
+║ = Wire:Wall_:Inactive_:U__ and Wire:Wall_:Inactive_:D__ and Wall
+╔ = Wire:Wall_:Inactive_:D__ and Wire:Wall_:Inactive_:R__ and Wall
+╗ = Wire:Wall_:Inactive_:L__ and Wire:Wall_:Inactive_:D__ and Wall
+╚ = Wire:Wall_:Inactive_:U__ and Wire:Wall_:Inactive_:R__ and Wall
+╝ = Wire:Wall_:Inactive_:L__ and Wire:Wall_:Inactive_:U__ and Wall
 
-╪ = Wire:Wall_:Active_:L_ and Wire:Wall_:Active_:R_ and Wall
-╫ = Wire:Wall_:Active_:U_ and Wire:Wall_:Active_:D_ and Wall
-╓ = Wire:Wall_:Active_:D_ and Wire:Wall_:Active_:R_ and Wall
-╖ = Wire:Wall_:Active_:L_ and Wire:Wall_:Active_:D_ and Wall
-╙ = Wire:Wall_:Active_:U_ and Wire:Wall_:Active_:R_ and Wall
-╜ = Wire:Wall_:Active_:L_ and Wire:Wall_:Active_:U_ and Wall
+╪ = Wire:Wall_:Active_:L__ and Wire:Wall_:Active_:R__ and Wall
+╫ = Wire:Wall_:Active_:U__ and Wire:Wall_:Active_:D__ and Wall
+╓ = Wire:Wall_:Active_:D__ and Wire:Wall_:Active_:R__ and Wall
+╖ = Wire:Wall_:Active_:L__ and Wire:Wall_:Active_:D__ and Wall
+╙ = Wire:Wall_:Active_:U__ and Wire:Wall_:Active_:R__ and Wall
+╜ = Wire:Wall_:Active_:L__ and Wire:Wall_:Active_:U__ and Wall
 
 ╭ = DiagramWallLU and Wall
 ╮ = DiagramWallRU and Wall
@@ -704,11 +610,7 @@ G = Crate:G_
 ┤ = DiagramWallR and Wall and Diagram:R_:U_ and Diagram:UR_:B_
 ┼ = Wall and Diagram:D_:W_ and Diagram:L_:U_ and Diagram:UL_:B_ and Diagram:UR_:R_ and Diagram:R_:G_
 
-WallEnds = _WallEnds:Direction
-WallDeco = WallDecoR or WallDecoL or WallDecoU or WallDecoD or WallDecoRL or WallDecoUD or WallDecoRU or WallDecoRD or WallDecoLU or WallDecoLD or WallDecoRLU or WallDecoRLD or WallDecoUDR or WallDecoUDL or WallDecoRLUD
-WallDecoCorner = WallDecoCornerRU or WallDecoCornerRD or WallDecoCornerLU or WallDecoCornerLD
-
-Wire = Wire:WireType:WireState:Direction
+Wire = Wire:WireType:WireState:directions
 
 DiagramWall = DiagramWallLU or DiagramWallRU or DiagramWallRD or DiagramWallLD or DiagramWallL or DiagramWallU or DiagramWallR or DiagramWallD
 
@@ -738,7 +640,7 @@ Background
 Trigger:Value
 DoorOpen
 
-Direction -> Wire:Floor_:WireState:Direction, Wire:Trigger_:WireState:Direction
+directions -> Wire:Floor_:WireState:directions, Wire:Trigger_:WireState:directions
 Player, Crate:Value, ActiveCrate:Value, Wall, DoorClosed
 
 Goal
@@ -749,64 +651,29 @@ Value -> Diagram:Section:Value
 Value -> GlowingInput:Section:Value:Frame
 Value -> GlowingOutput:Section:Value:Frame
 
-WallDeco
-WallDecoCornerRU
-WallDecoCornerRD
-WallDecoCornerLU
-WallDecoCornerLD
+directions -> WallDeco:directions
+directions -> WallDecoCorner:directions
 
-Direction -> Wire:Wall_:WireState:Direction
-
-Direction -> _WallEnds:Direction
+directions -> Wire:Wall_:WireState:directions
 
 _Activating, _Deactivating
 _Temp
 _DoorClosing
 Value -> _Temp:Value
+directions -> _Temp:directions
 
 ======
 RULES
 ======
 
 ( Visuals )
-right [ Wall no WallDeco | no Wall ] -> [ Wall _WallEnds:R_ | ]
-left [ Wall no WallDeco | no Wall ] -> [ Wall _WallEnds:L_ | ]
-up [ Wall no WallDeco | no Wall ] -> [ Wall _WallEnds:U_ | ]
-down [ Wall no WallDeco | no Wall ] -> [ Wall _WallEnds:D_ | ]
+[ Wall no WallDeco:> | no Wall ] -> [ Wall WallDeco:> | ]
 
-right [ Wall no _WallEnds:U_ | _WallEnds:U_ ] -> [ Wall _Temp | _WallEnds:U_ ]
-up [ _Temp | _WallEnds:R_ ] -> [ _Temp WallDecoCornerRU | _WallEnds:R_ ]
-[ _Temp ] -> [ ]
-right [ Wall no _WallEnds:D_ | _WallEnds:D_ ] -> [ Wall _Temp | _WallEnds:D_ ]
-down [ _Temp | _WallEnds:R_ ] -> [ _Temp WallDecoCornerRD | _WallEnds:R_ ]
-[ _Temp ] -> [ ]
-left [ Wall no _WallEnds:U_ | _WallEnds:U_ ] -> [ Wall _Temp | _WallEnds:U_ ]
-up [ _Temp | _WallEnds:L_ ] -> [ _Temp WallDecoCornerLU | _WallEnds:L_ ]
-[ _Temp ] -> [ ]
-left [ Wall no _WallEnds:D_ | _WallEnds:D_ ] -> [ Wall _Temp | _WallEnds:D_ ]
-down [ _Temp | _WallEnds:L_ ] -> [ _Temp WallDecoCornerLD | _WallEnds:L_ ]
-[ _Temp ] -> [ ]
+[ Wall no WallDeco:directions | WallDeco:^ ] -> [ Wall _Temp:^ | WallDeco:^ ]
+[ _Temp:> | WallDeco:v ] -> [ _Temp WallDecoCorner:v | WallDeco:v ]
+right [ _Temp:directions ] -> [ ]
 
-[ _WallEnds:R_ _WallEnds:L_ _WallEnds:U_ _WallEnds:D_ ] -> [ WallDecoRLUD ]
-[ _WallEnds:R_ _WallEnds:L_ _WallEnds:U_ ] -> [ WallDecoRLU ]
-[ _WallEnds:R_ _WallEnds:L_ _WallEnds:D_ ] -> [ WallDecoRLD ]
-[ _WallEnds:R_ _WallEnds:U_ _WallEnds:D_ ] -> [ WallDecoUDR ]
-[ _WallEnds:L_ _WallEnds:U_ _WallEnds:D_ ] -> [ WallDecoUDL ]
-[ _WallEnds:R_ _WallEnds:L_ ] -> [ WallDecoRL ]
-[ _WallEnds:U_ _WallEnds:D_ ] -> [ WallDecoUD ]
-[ _WallEnds:R_ _WallEnds:U_ ] -> [ WallDecoRU ]
-[ _WallEnds:R_ _WallEnds:D_ ] -> [ WallDecoRD ]
-[ _WallEnds:L_ _WallEnds:U_ ] -> [ WallDecoLU ]
-[ _WallEnds:L_ _WallEnds:D_ ] -> [ WallDecoLD ]
-[ _WallEnds:R_ ] -> [ WallDecoR ]
-[ _WallEnds:L_ ] -> [ WallDecoL ]
-[ _WallEnds:U_ ] -> [ WallDecoU ]
-[ _WallEnds:D_ ] -> [ WallDecoD ]
-
-right WireState [ Trigger:Value no Wire | Wire:WireType:WireState:L_ ] -> [ Trigger:Value Wire:Trigger_:WireState:R_ | Wire:WireType:WireState:L_ ]
-left WireState [ Trigger:Value no Wire | Wire:WireType:WireState:R_ ] -> [ Trigger:Value Wire:Trigger_:WireState:L_ | Wire:WireType:WireState:R_ ]
-up WireState [ Trigger:Value no Wire | Wire:WireType:WireState:D_ ] -> [ Trigger:Value Wire:Trigger_:WireState:U_ | Wire:WireType:WireState:D_ ]
-down WireState [ Trigger:Value no Wire | Wire:WireType:WireState:U_ ] -> [ Trigger:Value Wire:Trigger_:WireState:D_ | Wire:WireType:WireState:U_ ]
+WireState [ Trigger:Value no Wire | Wire:WireType:WireState:< ] -> [ Trigger:Value Wire:Trigger_:WireState:> | Wire:WireType:WireState:< ]
 
 Value [ ActiveCrate:Value ] -> [ Crate:Value ]
 
@@ -850,31 +717,25 @@ Value [ > Crate:Value | Crate:G_ ] -> [ > Crate:MergeG > GlowingCrate:MergeG:t3 
 
 ( Visuals )
 late Value [ Crate:Value Trigger:Value ] -> [ ActiveCrate:Value Trigger:Value ]
+late Value [ ActiveCrate:Value no Trigger:Value ] -> [ Crate:Value ]
 
 ( Activate and propagate wires )
-late Value Direction [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Inactive_:Direction ] -> [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:Direction _Activating ] sfx1
+late Value [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Inactive_:> ] -> [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:> _Activating ] sfx1
 
-late right WireType1 WireType2 [ _Activating no _Temp Wire:WireType1:Active_:R_ | Wire:WireType2:Inactive_:L_ ] -> [ Wire:WireType1:Active_:R_ | Wire:WireType2:Active_:L_ _Activating _Temp ] again
-late left WireType1 WireType2 [ _Activating no _Temp Wire:WireType1:Active_:L_ | Wire:WireType2:Inactive_:R_ ] -> [ Wire:WireType1:Active_:L_ | Wire:WireType2:Active_:R_ _Activating _Temp ] again
-late up WireType1 WireType2 [ _Activating no _Temp Wire:WireType1:Active_:U_ | Wire:WireType2:Inactive_:D_ ] -> [ Wire:WireType1:Active_:U_ | Wire:WireType2:Active_:D_ _Activating _Temp ] again
-late down WireType1 WireType2 [ _Activating no _Temp Wire:WireType1:Active_:D_ | Wire:WireType2:Inactive_:U_ ] -> [ Wire:WireType1:Active_:D_ | Wire:WireType2:Active_:U_ _Activating _Temp ] again
+late WireType1 WireType2 [ _Activating no _Temp Wire:WireType1:Active_:> | Wire:WireType2:Inactive_:< ] -> [ Wire:WireType1:Active_:> | Wire:WireType2:Active_:< _Activating _Temp ] again
 
-late WireType Direction1 Direction2 [ _Activating no _Temp Wire:WireType:Active_:Direction1 Wire:WireType:Inactive_:Direction2] -> [ _Activating _Temp Wire:WireType:Active_:Direction1 Wire:WireType:Active_:Direction2] again
+late WireType Directions2 [ _Activating no _Temp Wire:WireType:Active_:> Wire:WireType:Inactive_:Directions2] -> [ _Activating _Temp Wire:WireType:Active_:> Wire:WireType:Active_:Directions2] again
 
 late [ _Activating no _Temp ] -> [ ]
 
 late [ _Temp ] -> [ ]
 
 ( Deactivate and propagate wires )
-late Value [ ActiveCrate:Value no Trigger:Value ] -> [ Crate:Value ]
-late Value Direction [ no ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:Direction ] -> [ Trigger:Value Wire:Trigger_:Inactive_:Direction _Deactivating ] sfx0
+late Value [ no ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:> ] -> [ Trigger:Value Wire:Trigger_:Inactive_:> _Deactivating ] sfx0
 
-late right WireType1 WireType2 [ _Deactivating no _Temp Wire:WireType1:Inactive_:R_ | Wire:WireType2:Active_:L_ ] -> [ Wire:WireType1:Inactive_:R_ | Wire:WireType2:Inactive_:L_ _Deactivating _Temp ] again
-late left WireType1 WireType2 [ _Deactivating no _Temp Wire:WireType1:Inactive_:L_ | Wire:WireType2:Active_:R_ ] -> [ Wire:WireType1:Inactive_:L_ | Wire:WireType2:Inactive_:R_ _Deactivating _Temp ] again
-late up WireType1 WireType2 [ _Deactivating no _Temp Wire:WireType1:Inactive_:U_ | Wire:WireType2:Active_:D_ ] -> [ Wire:WireType1:Inactive_:U_ | Wire:WireType2:Inactive_:D_ _Deactivating _Temp ] again
-late down WireType1 WireType2 [ _Deactivating no _Temp Wire:WireType1:Inactive_:D_ | Wire:WireType2:Active_:U_ ] -> [ Wire:WireType1:Inactive_:D_ | Wire:WireType2:Inactive_:U_ _Deactivating _Temp ] again
+late WireType1 WireType2 [ _Deactivating no _Temp Wire:WireType1:Inactive_:> | Wire:WireType2:Active_:< ] -> [ Wire:WireType1:Inactive_:> | Wire:WireType2:Inactive_:< _Deactivating _Temp ] again
 
-late WireType Direction1 Direction2 [ _Deactivating no _Temp Wire:WireType:Inactive_:Direction1 Wire:WireType:Active_:Direction2] -> [ _Deactivating _Temp Wire:WireType:Inactive_:Direction1 Wire:WireType:Inactive_:Direction2] again
+late WireType Directions2 [ _Deactivating no _Temp Wire:WireType:Inactive_:> Wire:WireType:Active_:Directions2] -> [ _Deactivating _Temp Wire:WireType:Inactive_:> Wire:WireType:Inactive_:Directions2] again
 
 late [ _Deactivating no _Temp ] -> [ ]
 
@@ -883,10 +744,7 @@ late [ _Temp ] -> [ ]
 ( Open/close doors )
 
 late [ Door ] -> [ _DoorClosing ]
-late right [ Wire:WireType:Active_:R_ | _DoorClosing ] -> [ Wire:WireType:Active_:R_ | DoorOpen ]
-late left [ Wire:WireType:Active_:L_ | _DoorClosing ] -> [ Wire:WireType:Active_:L_ | DoorOpen ]
-late up [ Wire:WireType:Active_:U_ | _DoorClosing ] -> [ Wire:WireType:Active_:U_ | DoorOpen ]
-late down [ Wire:WireType:Active_:D_ | _DoorClosing ] -> [ Wire:WireType:Active_:D_ | DoorOpen ]
+late [ Wire:WireType:Active_:> | _DoorClosing ] -> [ Wire:WireType:Active_:> | DoorOpen ]
 late [ _DoorClosing ] -> [ DoorClosed ]
 
 ==============
