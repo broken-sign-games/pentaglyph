@@ -26,7 +26,8 @@ D__ = down
 Value = W_ U_ B_ R_ G_
 WireType = Floor_ Wall_ Trigger_
 WireState = Active_ Inactive_
-Frame = t7 t6 t5 t4 t3 t2 t1 t0
+DoorState = Open_ Closed_
+Frame = t6 t5 t4 t3 t2 t1 t0
 Section = U_ D_ L_ R_ UL_ UR_ DL_ DR_
 
 Value1 = Value
@@ -37,6 +38,8 @@ Section1 = Section
 Section2 = Section
 Directions1 = directions
 Directions2 = directions
+DoorState1 = DoorState
+DoorState2 = DoorState
 
 =========
 MAPPINGS
@@ -58,7 +61,13 @@ Value => MergeG
 W_ U_ B_ R_ G_ -> B_ W_ R_ U_ G_
 
 Frame => NextFrame
-t7 t6 t5 t4 t3 t2 t1 t0 -> t6 t5 t4 t3 t2 t1 t0 t0
+t6 t5 t4 t3 t2 t1 t0 -> t5 t4 t3 t2 t1 t0 t0
+
+WireState => OppositeWireState
+Active_ Inactive_ -> Inactive_ Active_
+
+DoorState => OppositeDoorState
+Open_ Closed_ -> Closed_ Open_
 
 ========
 OBJECTS
@@ -156,18 +165,17 @@ Crate:G_
 GlowingCrate:Value:Frame
 transparent
 
-GlowingCrate:Value:t3
-#BC2F01 #680703 #F9960F
-copy: Crate:Value
-
 GlowingCrate:Value:t2
-#F9960F #BC2F01 #F9CB60
+#BC2F01 #680703 #F9960F
 copy: Crate:Value
 
 GlowingCrate:Value:t1
+#F9960F #BC2F01 #F9CB60
+copy: Crate:Value
+
+GlowingCrate:Value:t0
 #BC2F01 #680703 #F9960F
 copy: Crate:Value
-( t0 is end of animation )
 
 ActiveCrate:Value
 #BC2F01 #680703 #F9960F
@@ -177,7 +185,10 @@ Trigger:Value
 transparent #F9960F #F9CB60
 copy: Crate:Value
 
-DoorOpen
+Door:DoorState
+transparent
+
+Door:Open_
 transparent #BC2F01
 000000000
 000010000
@@ -189,31 +200,28 @@ transparent #BC2F01
 000010000
 000000000
 
-DoorClosed
+Door:Closed_
 #60117f #BE7DBC
-copy: DoorOpen
+copy: Door:Open_
 
-DoorClosing:Frame
+DoorAnimation:DoorState:Frame
 transparent
 
-DoorClosing:t1
+DoorAnimation:Closed_:t1
 #BE7DBC #F9960F
-copy: DoorOpen
+copy: Door:Open_
 
-DoorClosing:t0
+DoorAnimation:Closed_:t0
 #922A95 #BE7DBC
-copy: DoorOpen
+copy: Door:Open_
 
-DoorOpening:Frame
-transparent
-
-DoorOpening:t1
+DoorAnimation:Open_:t1
 #922A95 #BE7DBC
-copy: DoorOpen
+copy: Door:Open_
 
-DoorOpening:t0
+DoorAnimation:Open_:t0
 #BE7DBC #F9960F
-copy: DoorOpen
+copy: Door:Open_
 
 
 Goal
@@ -482,35 +490,33 @@ transparent #60117f
 GlowingInput:Section:Value:Frame
 transparent
 
-GlowingInput:Section:Value:t3
+GlowingInput:Section:Value:t2
 #922A95 #BE7DBC
 copy: Diagram:Section:Value
 
-GlowingInput:Section:Value:t2
+GlowingInput:Section:Value:t1
 #60117f #BE7DBC
 copy: Diagram:Section:Value
 
-GlowingInput:Section:Value:t1
+GlowingInput:Section:Value:t0
 #350828 #60117f
 copy: Diagram:Section:Value
-( t0 is end of animation )
 
 
 GlowingOutput:Section:Value:Frame
 transparent
 
-GlowingOutput:Section:Value:t3
+GlowingOutput:Section:Value:t2
 #922A95 #BE7DBC
 copy: Diagram:Section:Value
 
-GlowingOutput:Section:Value:t2
+GlowingOutput:Section:Value:t1
 #60117f #BE7DBC
 copy: Diagram:Section:Value
 
-GlowingOutput:Section:Value:t1
+GlowingOutput:Section:Value:t0
 #350828 #60117f
 copy: Diagram:Section:Value
-( t0 is end of animation )
 
 
 ( Direction indicates which side borders non-wall tiles )
@@ -559,16 +565,13 @@ pink
 _DoorClosing
 pink
 
-_DoorWasClosed
+_DoorWas:DoorState
 pink
 
-_DoorWasOpen
+_DoorWillBe:DoorState
 pink
 
-_Activating
-transparent
-
-_Deactivating
+_WireGoing:WireState
 transparent
 
 =======
@@ -595,8 +598,8 @@ G = Crate:G_
 Ḡ = ActiveCrate:G_ and Trigger:G_
 
 * = Goal
-+ = DoorClosed
-- = DoorOpen
++ = Door:Closed_
+- = Door:Open_
 
 ─ = Wire:Floor_:Inactive_:L__ and Wire:Floor_:Inactive_:R__
 │ = Wire:Floor_:Inactive_:U__ and Wire:Floor_:Inactive_:D__
@@ -640,7 +643,7 @@ Wire = Wire:WireType:WireState:directions
 
 DiagramWall = DiagramWallLU or DiagramWallRU or DiagramWallRD or DiagramWallLD or DiagramWallL or DiagramWallU or DiagramWallR or DiagramWallD
 
-Door = DoorOpen or DoorClosed
+Door = Door:DoorState
 
 =======
 SOUNDS
@@ -649,7 +652,7 @@ SOUNDS
 Crate:Value move 98127707
 ActiveCrate:Value move 98127707
 
-GlowingCrate:Value:t3 create 82946903
+GlowingCrate:Value:t2 create 82946903
 
 Wire create 38476507
 
@@ -665,11 +668,11 @@ COLLISIONLAYERS
 
 Background
 Trigger:Value
-DoorOpen
-DoorOpening:Frame, DoorClosing:Frame
+Door:Open_
+DoorAnimation:DoorState:Frame
 
 directions -> Wire:Floor_:WireState:directions, Wire:Trigger_:WireState:directions
-Player, Crate:Value, ActiveCrate:Value, Wall, DoorClosed
+Player, Crate:Value, ActiveCrate:Value, Wall, Door:Closed_
 
 Goal
 GlowingCrate:Value:Frame
@@ -684,10 +687,11 @@ directions -> WallDecoCorner:directions
 
 directions -> Wire:Wall_:WireState:directions
 
-_Activating, _Deactivating
+_WireGoing:WireState
 _Temp
 _DoorClosing
-_DoorWasClosed, _DoorWasOpen
+_DoorWas:DoorState
+_DoorWillBe:DoorState
 Value -> _Temp:Value
 directions -> _Temp:directions
 
@@ -698,8 +702,8 @@ RULES
 ( Visuals )
 [ Wall no WallDeco:> | no Wall ] -> [ Wall WallDeco:> | ]
 
-[ Wall no WallDeco:directions | WallDeco:^ ] -> [ Wall _Temp:^ | WallDeco:^ ]
-[ _Temp:> | WallDeco:v ] -> [ _Temp WallDecoCorner:v | WallDeco:v ]
+[ Wall no WallDeco:^ | WallDeco:^ ] -> [ Wall _Temp:^ | WallDeco:^ ]
+[ _Temp:> | WallDeco:v ] -> [ _Temp:> WallDecoCorner:v | WallDeco:v ]
 [ _Temp:> ] -> [ ]
 
 WireState [ Trigger:Value no Wire | Wire:WireType:WireState:< ] -> [ Trigger:Value Wire:Trigger_:WireState:> | Wire:WireType:WireState:< ]
@@ -719,10 +723,8 @@ Section Value Frame [ GlowingInput:Section:Value:Frame no _Temp:Value ] -> [ Glo
 Section Value Frame [ GlowingOutput:Section:Value:Frame no _Temp:Value ] -> [ GlowingOutput:Section:Value:NextFrame _Temp:Value ] again
 [ _Temp:Value ] -> [ ]
 
-[ DoorOpening:t0 ] -> [ DoorOpen ]
-[ DoorClosing:t0 ] -> [ DoorClosed ]
-Frame [ DoorOpening:Frame no _Temp ] -> [ DoorOpening:NextFrame _Temp ] again
-Frame [ DoorClosing:Frame no _Temp ] -> [ DoorClosing:NextFrame _Temp ] again
+DoorState [ DoorAnimation:DoorState:t0 ] -> [ Door:DoorState ]
+DoorState Frame [ DoorAnimation:DoorState:Frame no _Temp ] -> [ DoorAnimation:DoorState:NextFrame _Temp ] again
 [ _Temp ] -> [ ]
 
 ( Movement )
@@ -731,7 +733,7 @@ Frame [ DoorClosing:Frame no _Temp ] -> [ DoorClosing:NextFrame _Temp ] again
 
 ( Crate merging )
 Value1 Value2 [ > Crate:Value1 | Crate:Value2 ] [ Diagram:Section:Value1 ] [ Diagram:Section:Value2 ] -> [ > Crate:Value1 | Crate:Value2 ] [ Diagram:Section:Value1 _Temp:Value1 ] [ Diagram:Section:Value2 _Temp:Value2 ]
-Value Section [ Diagram:Section:Value _Temp:Value ] -> [ Diagram:Section:Value GlowingInput:Section:Value:t3 ]
+Value Section [ Diagram:Section:Value _Temp:Value ] -> [ Diagram:Section:Value GlowingInput:Section:Value:t2 ]
 
 Value [ > Crate:Value | Crate:W_ ] -> [ > _Temp:MergeW | ] again
 Value [ > Crate:Value | Crate:U_ ] -> [ > _Temp:MergeU | ] again
@@ -741,8 +743,8 @@ Value [ > Crate:Value | Crate:G_ ] -> [ > _Temp:MergeG | ] again
 
 Value Section [ _Temp:Value ] [ Diagram:Section:Value no _Temp:Value ] -> [ _Temp:Value ] [ Diagram:Section:Value _Temp:Value ]
 
-Value Section [ Diagram:Section:Value _Temp:Value ] -> [ Diagram:Section:Value GlowingOutput:Section:Value:t7 ]
-Value [ > _Temp:Value ] -> [ > Crate:Value > GlowingCrate:Value:t3 ]
+Value Section [ Diagram:Section:Value _Temp:Value ] -> [ Diagram:Section:Value GlowingOutput:Section:Value:t6 ]
+Value [ > _Temp:Value ] -> [ > Crate:Value > GlowingCrate:Value:t2 ]
 
 (############ late rules ############)
 
@@ -750,39 +752,25 @@ Value [ > _Temp:Value ] -> [ > Crate:Value > GlowingCrate:Value:t3 ]
 late Value [ Crate:Value Trigger:Value ] -> [ ActiveCrate:Value Trigger:Value ]
 late Value [ ActiveCrate:Value no Trigger:Value ] -> [ Crate:Value ]
 
-( Activate and propagate wires )
-late Value [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Inactive_:> ] -> [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:> _Activating ] sfx1
+( Activate and deactivate wires )
+late Value [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Inactive_:> ] -> [ ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:> _WireGoing:Active_ ] sfx1
+late Value [ no ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:> ] -> [ Trigger:Value Wire:Trigger_:Inactive_:> _WireGoing:Inactive_ ] sfx0
 
-late WireType1 WireType2 [ _Activating no _Temp Wire:WireType1:Active_:> | Wire:WireType2:Inactive_:< ] -> [ Wire:WireType1:Active_:> | Wire:WireType2:Active_:< _Activating _Temp ] again
+( Propagate wires )
+late WireType2 WireState [ _WireGoing:WireState no _Temp Wire:WireType:WireState:> | Wire:WireType2:OppositeWireState:< ] -> [ Wire:WireType:WireState:> | Wire:WireType2:WireState:< _WireGoing:WireState _Temp ] again
 
-late WireType Directions2 [ _Activating no _Temp Wire:WireType:Active_:> Wire:WireType:Inactive_:Directions2] -> [ _Activating _Temp Wire:WireType:Active_:> Wire:WireType:Active_:Directions2] again
+late WireType WireState Directions2 [ _WireGoing:WireState no _Temp Wire:WireType:WireState:> Wire:WireType:OppositeWireState:Directions2] -> [ _WireGoing:WireState _Temp Wire:WireType:WireState:> Wire:WireType:WireState:Directions2 ] again
 
-late [ _Activating no _Temp ] -> [ ]
-
-late [ _Temp ] -> [ ]
-
-( Deactivate and propagate wires )
-late Value [ no ActiveCrate:Value Trigger:Value Wire:Trigger_:Active_:> ] -> [ Trigger:Value Wire:Trigger_:Inactive_:> _Deactivating ] sfx0
-
-late WireType1 WireType2 [ _Deactivating no _Temp Wire:WireType1:Inactive_:> | Wire:WireType2:Active_:< ] -> [ Wire:WireType1:Inactive_:> | Wire:WireType2:Inactive_:< _Deactivating _Temp ] again
-
-late WireType Directions2 [ _Deactivating no _Temp Wire:WireType:Inactive_:> Wire:WireType:Active_:Directions2] -> [ _Deactivating _Temp Wire:WireType:Inactive_:> Wire:WireType:Inactive_:Directions2] again
-
-late [ _Deactivating no _Temp ] -> [ ]
+late [ _WireGoing:WireState no _Temp ] -> [ ]
 
 late [ _Temp ] -> [ ]
 
 ( Open/close doors )
 
-late [ DoorOpen ] -> [ DoorOpen _DoorWasOpen ]
-late [ DoorClosed ] -> [ DoorClosed _DoorWasClosed ]
-late [ Door ] -> [ _DoorClosing ]
-late [ Wire:WireType:Active_:> | _DoorClosing ] -> [ Wire:WireType:Active_:> | DoorOpen ]
-late [ _DoorClosing ] -> [ DoorClosed ]
-late [ DoorOpen _DoorWasClosed ] -> [ DoorOpening:t1 ] sfx2
-late [ DoorClosed _DoorWasOpen ] -> [ DoorClosing:t1 ] sfx2
-late [ _DoorWasClosed ] -> [ ]
-late [ _DoorWasOpen ] -> [ ]
+late DoorState1 [ Door:DoorState1 no _DoorWas:DoorState ] -> [ _DoorWillBe:Closed_ _DoorWas:DoorState1 ]
+late [ Wire:WireType:Active_:> | _DoorWillBe:Closed_ ] -> [ Wire:WireType:Active_:> | _DoorWillBe:Open_ ]
+late DoorState [ _DoorWillBe:DoorState _DoorWas:OppositeDoorState ] -> [ DoorAnimation:DoorState:t1 ] sfx2
+late DoorState [ _DoorWillBe:DoorState _DoorWas:DoorState ] -> [ Door:DoorState ]
 
 ==============
 WINCONDITIONS
