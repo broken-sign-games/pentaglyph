@@ -654,7 +654,7 @@ GlowingCrate:Value:t3 create 82946903
 Wire create 38476507
 
 sfx0 49593708 (power down)
-sfx1 83091902 (power up)
+sfx1 4017903 (power up)
 sfx2 23100708 (door open/close)
 
 endlevel 68360900
