@@ -14,8 +14,6 @@ run_rules_on_level_start
 again_interval 0.1
 key_repeat_interval 0.3
 
-debug
-
 =====
 TAGS
 =====
@@ -28,7 +26,7 @@ D__ = down
 Value = W_ U_ B_ R_ G_
 WireType = Floor_ Wall_ Trigger_
 WireState = Active_ Inactive_
-Frame = t10 t9 t8 t7 t6 t5 t4 t3 t2 t1 t0
+Frame = t7 t6 t5 t4 t3 t2 t1 t0
 Section = U_ D_ L_ R_ UL_ UR_ DL_ DR_
 
 Value1 = Value
@@ -60,7 +58,7 @@ Value => MergeG
 W_ U_ B_ R_ G_ -> B_ W_ R_ U_ G_
 
 Frame => NextFrame
-t10 t9 t8 t7 t6 t5 t4 t3 t2 t1 t0 -> t9 t8 t7 t6 t5 t4 t3 t2 t1 t0 t0
+t7 t6 t5 t4 t3 t2 t1 t0 -> t6 t5 t4 t3 t2 t1 t0 t0
 
 ========
 OBJECTS
@@ -193,6 +191,28 @@ transparent #BC2F01
 
 DoorClosed
 #60117f #BE7DBC
+copy: DoorOpen
+
+DoorClosing:Frame
+transparent
+
+DoorClosing:t1
+#BE7DBC #F9960F
+copy: DoorOpen
+
+DoorClosing:t0
+#922A95 #BE7DBC
+copy: DoorOpen
+
+DoorOpening:Frame
+transparent
+
+DoorOpening:t1
+#922A95 #BE7DBC
+copy: DoorOpen
+
+DoorOpening:t0
+#BE7DBC #F9960F
 copy: DoorOpen
 
 
@@ -539,6 +559,12 @@ pink
 _DoorClosing
 pink
 
+_DoorWasClosed
+pink
+
+_DoorWasOpen
+pink
+
 _Activating
 transparent
 
@@ -629,6 +655,7 @@ Wire create 38476507
 
 sfx0 49593708 (power down)
 sfx1 83091902 (power up)
+sfx2 23100708 (door open/close)
 
 endlevel 68360900
 
@@ -639,6 +666,7 @@ COLLISIONLAYERS
 Background
 Trigger:Value
 DoorOpen
+DoorOpening:Frame, DoorClosing:Frame
 
 directions -> Wire:Floor_:WireState:directions, Wire:Trigger_:WireState:directions
 Player, Crate:Value, ActiveCrate:Value, Wall, DoorClosed
@@ -659,6 +687,7 @@ directions -> Wire:Wall_:WireState:directions
 _Activating, _Deactivating
 _Temp
 _DoorClosing
+_DoorWasClosed, _DoorWasOpen
 Value -> _Temp:Value
 directions -> _Temp:directions
 
@@ -671,7 +700,7 @@ RULES
 
 [ Wall no WallDeco:directions | WallDeco:^ ] -> [ Wall _Temp:^ | WallDeco:^ ]
 [ _Temp:> | WallDeco:v ] -> [ _Temp WallDecoCorner:v | WallDeco:v ]
-right [ _Temp:directions ] -> [ ]
+[ _Temp:> ] -> [ ]
 
 WireState [ Trigger:Value no Wire | Wire:WireType:WireState:< ] -> [ Trigger:Value Wire:Trigger_:WireState:> | Wire:WireType:WireState:< ]
 
@@ -690,28 +719,30 @@ Section Value Frame [ GlowingInput:Section:Value:Frame no _Temp:Value ] -> [ Glo
 Section Value Frame [ GlowingOutput:Section:Value:Frame no _Temp:Value ] -> [ GlowingOutput:Section:Value:NextFrame _Temp:Value ] again
 [ _Temp:Value ] -> [ ]
 
-( Movement )
+[ DoorOpening:t0 ] -> [ DoorOpen ]
+[ DoorClosing:t0 ] -> [ DoorClosed ]
+Frame [ DoorOpening:Frame no _Temp ] -> [ DoorOpening:NextFrame _Temp ] again
+Frame [ DoorClosing:Frame no _Temp ] -> [ DoorClosing:NextFrame _Temp ] again
+[ _Temp ] -> [ ]
 
+( Movement )
 [ > Player | Crate:Value ] -> [  > Player | > Crate:Value  ]
 [ > Player | Wall ] -> [ Player | Wall ]
 
 ( Crate merging )
-
 Value1 Value2 [ > Crate:Value1 | Crate:Value2 ] [ Diagram:Section:Value1 ] [ Diagram:Section:Value2 ] -> [ > Crate:Value1 | Crate:Value2 ] [ Diagram:Section:Value1 _Temp:Value1 ] [ Diagram:Section:Value2 _Temp:Value2 ]
 Value Section [ Diagram:Section:Value _Temp:Value ] -> [ Diagram:Section:Value GlowingInput:Section:Value:t3 ]
 
-Value Section [ > Crate:Value | Crate:W_ ] [ Diagram:Section:MergeW no _Temp:MergeW ] -> [ > Crate:Value | Crate:W_ ] [ Diagram:Section:MergeW _Temp:MergeW ]
-Value Section [ > Crate:Value | Crate:U_ ] [ Diagram:Section:MergeU no _Temp:MergeU ] -> [ > Crate:Value | Crate:U_ ] [ Diagram:Section:MergeU _Temp:MergeU ]
-Value Section [ > Crate:Value | Crate:B_ ] [ Diagram:Section:MergeB no _Temp:MergeB ] -> [ > Crate:Value | Crate:B_ ] [ Diagram:Section:MergeB _Temp:MergeB ]
-Value Section [ > Crate:Value | Crate:R_ ] [ Diagram:Section:MergeR no _Temp:MergeR ] -> [ > Crate:Value | Crate:R_ ] [ Diagram:Section:MergeR _Temp:MergeR ]
-Value Section [ > Crate:Value | Crate:G_ ] [ Diagram:Section:MergeG no _Temp:MergeG ] -> [ > Crate:Value | Crate:G_ ] [ Diagram:Section:MergeG _Temp:MergeG ]
-Value Section [ Diagram:Section:Value _Temp:Value ] -> [ Diagram:Section:Value GlowingOutput:Section:Value:t7 ]
+Value [ > Crate:Value | Crate:W_ ] -> [ > _Temp:MergeW | ] again
+Value [ > Crate:Value | Crate:U_ ] -> [ > _Temp:MergeU | ] again
+Value [ > Crate:Value | Crate:B_ ] -> [ > _Temp:MergeB | ] again
+Value [ > Crate:Value | Crate:R_ ] -> [ > _Temp:MergeR | ] again
+Value [ > Crate:Value | Crate:G_ ] -> [ > _Temp:MergeG | ] again
 
-Value [ > Crate:Value | Crate:W_ ] -> [ > Crate:MergeW > GlowingCrate:MergeW:t3 | ] again
-Value [ > Crate:Value | Crate:U_ ] -> [ > Crate:MergeU > GlowingCrate:MergeU:t3 | ] again
-Value [ > Crate:Value | Crate:B_ ] -> [ > Crate:MergeB > GlowingCrate:MergeB:t3 | ] again
-Value [ > Crate:Value | Crate:R_ ] -> [ > Crate:MergeR > GlowingCrate:MergeR:t3 | ] again
-Value [ > Crate:Value | Crate:G_ ] -> [ > Crate:MergeG > GlowingCrate:MergeG:t3 | ] again
+Value Section [ _Temp:Value ] [ Diagram:Section:Value no _Temp:Value ] -> [ _Temp:Value ] [ Diagram:Section:Value _Temp:Value ]
+
+Value Section [ Diagram:Section:Value _Temp:Value ] -> [ Diagram:Section:Value GlowingOutput:Section:Value:t7 ]
+Value [ > _Temp:Value ] -> [ > Crate:Value > GlowingCrate:Value:t3 ]
 
 (############ late rules ############)
 
@@ -743,9 +774,15 @@ late [ _Temp ] -> [ ]
 
 ( Open/close doors )
 
+late [ DoorOpen ] -> [ DoorOpen _DoorWasOpen ]
+late [ DoorClosed ] -> [ DoorClosed _DoorWasClosed ]
 late [ Door ] -> [ _DoorClosing ]
 late [ Wire:WireType:Active_:> | _DoorClosing ] -> [ Wire:WireType:Active_:> | DoorOpen ]
 late [ _DoorClosing ] -> [ DoorClosed ]
+late [ DoorOpen _DoorWasClosed ] -> [ DoorOpening:t1 ] sfx2
+late [ DoorClosed _DoorWasOpen ] -> [ DoorClosing:t1 ] sfx2
+late [ _DoorWasClosed ] -> [ ]
+late [ _DoorWasOpen ] -> [ ]
 
 ==============
 WINCONDITIONS
